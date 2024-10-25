@@ -1,7 +1,7 @@
 import useCurrentMember from "@/features/members/api/use-current-member";
 import { useGetWorkspace } from "@/features/workspaces/api/use-get-workspace";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
-import { Loader, Triangle } from "lucide-react";
+import { AlertTriangle, Loader, Triangle } from "lucide-react";
 import WorkspaceHeader from "./workspace-header";
 
 const WorkspaceSidebar = () => {
@@ -20,7 +20,7 @@ const WorkspaceSidebar = () => {
     if(!workspace || !member) {
         return (
             <div className="flex flex-col gap-y-2 bg-[#5E2C5F] h-full items-center justify-center">
-                <Triangle className="size-5 text-white "/>
+                <AlertTriangle className="size-5 text-white "/>
                 <p className="text-white text-sm">
                     Workspace not found
                 </p>
@@ -29,7 +29,7 @@ const WorkspaceSidebar = () => {
     }
     return ( 
         <div className="flex flex-col bg-[#5E2C5F] h-full">
-            <WorkspaceHeader workspace={workspace}/>
+            <WorkspaceHeader workspace={workspace} isAdmin={member.role === "admin"}/>
         </div>
      );
 }
