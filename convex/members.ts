@@ -4,8 +4,8 @@ import { auth } from "./auth";
 import { Id } from "./_generated/dataModel";
 
 
-const populateUser = (ctx: QueryCtx , userId: Id<"users">) => {
-
+const populateUser = (ctx: QueryCtx , id: Id<"users">) => {
+  return ctx.db.get(id);
 };
 
 export const get = query({
@@ -31,6 +31,15 @@ export const get = query({
         .collect();
     
     const members = [];
+    for(const member of data){
+      const user = await populateUser(ctx , member.userId);
+      if(user) {
+        members.push({
+          ...member , user
+        })
+      }
+    }
+    return members;
   },
 });
 
