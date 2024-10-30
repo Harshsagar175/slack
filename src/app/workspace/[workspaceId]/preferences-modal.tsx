@@ -3,6 +3,7 @@ import { Dialog , DialogClose, DialogContent, DialogFooter, DialogHeader, Dialog
 import { Input } from "@/components/ui/input";
 import { useRemoveWorkSpace } from "@/features/workspaces/api/use-remove-workspaces";
 import { useUpdateWorkSpace } from "@/features/workspaces/api/use-update-workspaces";
+import { useConfirm } from "@/hooks/use-confirm";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 import { TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -24,7 +25,15 @@ export const PreferencesModal = ({open , setOpen , initialValue}: PreferencesMod
     const { mutate: removeWorkspace , isPending: isRemovingWorkspace } = useRemoveWorkSpace();
     const workspaceId = useWorkspaceId();
     
-    const handleRemove = () => {
+    const [ConfirmDialog , confirm] = useConfirm("Are you sure?" , "This action is irreversible.");
+
+
+    const handleRemove = async() => {
+        const ok = await confirm();
+        if(!ok) {
+            return ;
+        }
+
         removeWorkspace({
             id: workspaceId
         } , {
@@ -55,6 +64,8 @@ export const PreferencesModal = ({open , setOpen , initialValue}: PreferencesMod
         })
     }
     return (
+        <>
+        <ConfirmDialog />
         <Dialog  open={open} onOpenChange={setOpen}>
             <DialogContent className="p-0 bg-gray-50 overflow-hidden">
                 <DialogHeader className="p-4 border-b bg-white">
@@ -118,5 +129,6 @@ export const PreferencesModal = ({open , setOpen , initialValue}: PreferencesMod
                 </div>
             </DialogContent>
         </Dialog>
+        </>
     )
 }
