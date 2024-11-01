@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import WorkspaceHeader from "./workspace-header";
 import { SidebarItem } from "./sidebar-item";
-import { useGetChannel } from "@/features/channels/api/use-get-channels";
+import { useGetChannels } from "@/features/channels/api/use-get-channels";
 import WorkspaceSection from "./workspace-section";
 import useGetMember from "@/features/members/api/use-get-member";
 import UserItem from "./user-item";
@@ -26,7 +26,7 @@ const WorkspaceSidebar = () => {
   const { data: workspace, isLoading: workspaceLoading } = useGetWorkspace({
     id: workspaceId,
   });
-  const { data: channels, isLoading: channelsLoading } = useGetChannel({
+  const { data: channels, isLoading: channelsLoading } = useGetChannels({
     workspaceId,
   });
 
