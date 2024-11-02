@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRemoveChannel } from "@/features/channels/api/use-remove-channel";
 import { useUpdateChannel } from "@/features/channels/api/use-update-channel";
+import useCurrentMember from "@/features/members/api/use-current-member";
 import { useChannelId } from "@/hooks/use-channel-id";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
@@ -28,31 +29,46 @@ export const Header = ({ title }: HeaderProps) => {
   const channelId = useChannelId();
   const router = useRouter();
   const workspaceId = useWorkspaceId();
+  const { data: member} = useCurrentMember({workspaceId});
   const [editOpen, setEditOpen] = useState(false);
   const [value, setValue] = useState(title);
-const [ConfirmDialog , confirm] = useConfirm("Delete this channel" , "You are about to delete this channel . This action is irreversible .")
+  const [ConfirmDialog, confirm] = useConfirm(
+    "Delete this channel",
+    "You are about to delete this channel . This action is irreversible ."
+  );
   const { mutate: updateChannel, isPending: isUpdatingChannel } =
     useUpdateChannel();
   const { mutate: removeChannel, isPending: isRemovingChannel } =
     useRemoveChannel();
 
-    const handleDelete = async() => {
-        const ok = await confirm();
 
-        if(!ok){
-            return ;
-        }
-
-        removeChannel({ id: channelId } , {
-            onSuccess: () => {
-                toast.success("Channel deleted");
-                router.push(`/workspace/${workspaceId}`);
-            },
-            onError: () => {
-                toast.error("Failed to delete channel")
-            }
-        })
+  const handleEditOpen = (value: boolean) => {
+    if(member?.role !== "admin"){
+      return ;
     }
+    setEditOpen(value);
+  }
+
+  const handleDelete = async () => {
+    const ok = await confirm();
+
+    if (!ok) {
+      return;
+    }
+
+    removeChannel(
+      { id: channelId },
+      {
+        onSuccess: () => {
+          toast.success("Channel deleted");
+          router.push(`/workspace/${workspaceId}`);
+        },
+        onError: () => {
+          toast.error("Failed to delete channel");
+        },
+      }
+    );
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\s+/g, "-").toLowerCase();
     setValue(value);
@@ -91,14 +107,14 @@ const [ConfirmDialog , confirm] = useConfirm("Delete this channel" , "You are ab
             <DialogTitle># {title}</DialogTitle>
           </DialogHeader>
           <div className="px-4 pb-4 flex flex-col gap-y-2">
-            <Dialog open={editOpen} onOpenChange={setEditOpen}>
+            <Dialog open={editOpen} onOpenChange={handleEditOpen}>
               <DialogTrigger asChild>
                 <div className="px-5 py-4 bg-white rounded-lg border cursor-pointer hover:bg-gray-50">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-semibold">Channel name</p>
-                    <p className="text-sm text-[#1264a3] hover:underline font-semibold">
+                    {member?.role === "admin" && <p className="text-sm text-[#1264a3] hover:underline font-semibold">
                       Edit
-                    </p>
+                    </p>}
                   </div>
                   <p className="text-sm"># {title}</p>
                 </div>
@@ -127,12 +143,16 @@ const [ConfirmDialog , confirm] = useConfirm("Delete this channel" , "You are ab
                 </form>
               </DialogContent>
             </Dialog>
-            <div className="flex gap-2">
-              <button onClick={handleDelete} disabled={isRemovingChannel} className="flex-1 flex items-center gap-x-2 px-5 py-4 bg-white rounded-lg cursor-pointer border hover:bg-gray-50 text-rose-600">
+            {member?.role === "admin" && <div className="flex gap-2">
+              <button
+                onClick={handleDelete}
+                disabled={isRemovingChannel}
+                className="flex-1 flex items-center gap-x-2 px-5 py-4 bg-white rounded-lg cursor-pointer border hover:bg-gray-50 text-rose-600"
+              >
                 <TrashIcon className="size-4" />
                 <p className="text-sm font-semibold">Delete channel</p>
               </button>
-            </div>
+            </div>}
           </div>
         </DialogContent>
       </Dialog>
