@@ -16,7 +16,7 @@ type RequestType = {
     image?: Id<"_storage"> , 
     channelId?: Id<"channels">,
     parentMessageId?: Id<"messages">
-    // todo add conversation
+    conversationId: Id<"conversations">
 };
 type ResponseType = Id<"messages"> | null;
 

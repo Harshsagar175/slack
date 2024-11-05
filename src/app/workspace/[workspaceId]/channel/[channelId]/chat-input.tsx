@@ -20,6 +20,8 @@ type CreateMessageValues = {
     workspaceId: Id<"workspaces">;
     body: string;
     image?: Id<"_storage"> | undefined;
+    // self added
+    conversationId?: Id<"conversations"> | undefined;
 }
 
 export const ChatInput = ({ placeholder}: ChatInputProps) => {
