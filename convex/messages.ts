@@ -139,16 +139,16 @@ export const get = query({
                                 new Set([...existingReaction.memberIds , reaction.memberId])
                             );
                         } else {
-                            acc.push({ ...reaction , memberIds: [reaction.memberId]})
+                            acc.push({ ...reaction , memberIds: [reaction.memberId]});
                         }
                         return acc;
                     }, [] as (Doc<"reactions"> & {
                         count:number ;
-                        memberIds: Id<"members">[]
+                        memberIds: Id<"members">[];
                     })[]
                 );
 
-                const reactionsWithoutMemberIdproperty = dedupedReactions.map((memberId , ...rest) => rest);
+                const reactionsWithoutMemberIdproperty = dedupedReactions.map(({memberId , ...rest}) => rest);
                 return {
                     ...message,
                     image,

@@ -120,7 +120,7 @@ html , body , :root {
   text-decoration: underline !important;
 }
 
-.ql-rendred {
+.ql-rendrer {
   padding: 0 !important;
 }
 
@@ -132,4 +132,9 @@ html , body , :root {
   font-weight: 400 !important;
   font-size: 14px !important;
   @apply truncate;
+}
+
+.messages-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #dcdcdc #f8f8f8;
 }
