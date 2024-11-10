@@ -3,6 +3,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { Sidebar } from "./sidebar";
 import { Toolbar } from "./toolbar";
 import WorkspaceSidebar from "./workspace-sidebar";
+import { usePanel } from "@/hooks/use-panel";
 
 
 interface WorkspaceIdLayoutProps {
@@ -10,6 +11,8 @@ interface WorkspaceIdLayoutProps {
 }
 
 const WorkspaceLayout = ({ children }: WorkspaceIdLayoutProps) => {
+    const { parentMessageId , onClose} = usePanel();
+    const showPanel = !!parentMessageId;
     return (
         <div className="h-full">
             <Toolbar />
@@ -23,6 +26,15 @@ const WorkspaceLayout = ({ children }: WorkspaceIdLayoutProps) => {
                     <ResizablePanel minSize={20}>
                         {children}
                     </ResizablePanel>
+                    {showPanel && (
+                        <>
+                            <ResizableHandle withHandle>
+                                <ResizablePanel minSize={20} defaultSize={29}>
+                                    Load thread
+                                </ResizablePanel>
+                            </ResizableHandle>
+                        </>
+                    )}
                 </ResizablePanelGroup>
             </div>
         </div>
