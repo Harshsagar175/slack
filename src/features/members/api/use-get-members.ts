@@ -3,15 +3,15 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 
 
-interface useGetMemberProps {
-    id: Id<"members">;
+interface useGetMembersProps {
+    workspaceId: Id<"workspaces">;
 }
 
-const useGetMember = ({ id }: useGetMemberProps) => {
-    const data = useQuery(api.members.getById , { id});
+const useGetMembers = ({ workspaceId }: useGetMembersProps) => {
+    const data = useQuery(api.members.get , { workspaceId});
     const isLoading = data === undefined;
 
     return { data , isLoading};
 }
  
-export default useGetMember;
+export default useGetMembers;

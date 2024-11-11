@@ -14,7 +14,7 @@ type RequestType = {
     workspaceId: Id<"workspaces"> ,
     memberId: Id<"members">
 };
-type ResponseType = Doc<"conversations"> | null;
+type ResponseType = Id<"conversations"> | null;
 
 export const useCreateOrGetConversation = () => {
     const [data , setData] = useState<ResponseType>(null);
