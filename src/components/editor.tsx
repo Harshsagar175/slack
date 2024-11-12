@@ -198,7 +198,7 @@ const Editor = ({ onCancel , onSubmit , placeHolder="Write something ..." , defa
                   body: JSON.stringify(quillRef.current?.getContents()),
                   image
                 })
-              }} disabled={false || isEmpty} className="bg-[#007a5a] hover:bg-[#007a5a]/80 text-white">Save</Button>
+              }} disabled={isEmpty} className="bg-[#007a5a] hover:bg-[#007a5a]/80 text-white">Save</Button>
             </div>
           )}
           {variant === "create" && (

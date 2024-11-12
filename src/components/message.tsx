@@ -13,6 +13,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useToggleReaction } from "@/features/reactions/api/use-toggle-reaction";
 import { Reactions } from "./reactions";
 import { usePanel } from "@/hooks/use-panel";
+import ThreadBar from "./thread-bar";
 
 const Renderer = dynamic(() => import("@/components/renderer"), { ssr: false });
 const Editor = dynamic(() => import("@/components/editor"), { ssr: false });
@@ -40,6 +41,7 @@ interface MessageProps {
   hideThreadButton?: boolean;
   threadCount?: number;
   threadImage?: string;
+  threadName?: string;
   threadTimestamp?: number;
 }
 
@@ -64,28 +66,32 @@ export const Message = ({
   hideThreadButton,
   threadCount,
   threadImage,
+  threadName ,
   threadTimestamp,
 }: MessageProps) => {
   const { mutate: updateMessage, isPending: isUpdatingMessage } =
     useUpdateMessage();
   const { mutate: removeMessage, isPending: isRemovingMessage } =
     useRemoveMessage();
-  const { mutate: toggleReaction , isPending: isTogglingReaction } = useToggleReaction();
-  const { parentMessageId , onOpenMessage , onClose } = usePanel();
+  const { mutate: toggleReaction, isPending: isTogglingReaction } =
+    useToggleReaction();
+  const { parentMessageId, onOpenMessage , onOpenProfile , onClose } = usePanel();
   const [ConfirmDialog, confirm] = useConfirm(
     "Delete message",
     "Are you sure you want to delete this message?"
   );
-  const isPending = isUpdatingMessage;
-
+  const isPending = isUpdatingMessage || isTogglingReaction;
 
   const handleReaction = (value: string) => {
-    toggleReaction({ messageId: id , value} , {
-      onError: () => {
-        toast.error("Failed to toggle reaction");
+    toggleReaction(
+      { messageId: id, value },
+      {
+        onError: () => {
+          toast.error("Failed to toggle reaction");
+        },
       }
-    })
-  }
+    );
+  };
 
   const handleDelete = async () => {
     const ok = await confirm();
@@ -99,8 +105,8 @@ export const Message = ({
       {
         onSuccess: () => {
           toast.success("Message deleted");
-          
-          if(parentMessageId === id) {
+
+          if (parentMessageId === id) {
             onClose();
           }
         },
@@ -132,7 +138,9 @@ export const Message = ({
         <div
           className={cn(
             "flex flex-col gap-2 p-1.5 px-5 hover:bg-gray-100/60 group relative",
-            isEditing && "bg-[#f2c74433] hover:bg-[#f2c74433]" , isRemovingMessage && "bg-rose-500/50 transform transition-all scale-y-0 origin-botton duration-200"
+            isEditing && "bg-[#f2c74433] hover:bg-[#f2c74433]",
+            isRemovingMessage &&
+              "bg-rose-500/50 transform transition-all scale-y-0 origin-botton duration-200"
           )}
         >
           <div className="flex items-start gap-2">
@@ -161,6 +169,13 @@ export const Message = ({
                   </span>
                 ) : null}
                 <Reactions onChange={handleReaction} data={reactions} />
+                <ThreadBar
+                  count={threadCount} 
+                  image={threadImage}
+                  name={threadName}
+                  timestamp={threadTimestamp}
+                  onClick={() => onOpenMessage(id)}
+                />
               </div>
             )}
           </div>
@@ -185,13 +200,15 @@ export const Message = ({
     <>
       <ConfirmDialog />
       <div
-          className={cn(
-            "flex flex-col gap-2 p-1.5 px-5 hover:bg-gray-100/60 group relative",
-            isEditing && "bg-[#f2c74433] hover:bg-[#f2c74433]" , isRemovingMessage && "bg-rose-500/50 transform transition-all scale-y-0 origin-botton duration-200"
-          )}
+        className={cn(
+          "flex flex-col gap-2 p-1.5 px-5 hover:bg-gray-100/60 group relative",
+          isEditing && "bg-[#f2c74433] hover:bg-[#f2c74433]",
+          isRemovingMessage &&
+            "bg-rose-500/50 transform transition-all scale-y-0 origin-botton duration-200"
+        )}
       >
         <div className="flex items-start gap-2">
-          <button>
+          <button onClick={() => onOpenProfile(memberId)}>
             <Avatar>
               <AvatarImage src={authorImage} />
               <AvatarFallback>{avatarFallBack}</AvatarFallback>
@@ -211,7 +228,7 @@ export const Message = ({
             <div className="flex flex-col w-full overflow-hidden">
               <div className="text-sm">
                 <button
-                  onClick={() => {}}
+                  onClick={() => onOpenProfile(memberId)}
                   className="font-bold text-primary hover:underline"
                 >
                   {authorName}
@@ -229,6 +246,13 @@ export const Message = ({
                 <span className="text-xs text-muted-foreground">(edited)</span>
               ) : null}
               <Reactions onChange={handleReaction} data={reactions} />
+              <ThreadBar
+                count={threadCount}
+                image={threadImage}
+                name={threadName}
+                timestamp={threadTimestamp}
+                onClick={() => onOpenMessage(id)}
+              />
             </div>
           )}
         </div>
