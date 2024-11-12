@@ -80,7 +80,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
                     <Button disabled={pending} onClick={() => onProvidersignIn("github")} variant="outline" size="lg" className="w-full relative">Continue with Github  <FaGithub className="size-5 absolute top-2.5 left-2.5" /> </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                    Don't have an account? <span onClick={() => setState("signUp")} className="text-sky-900 hover:underline cursor-pointer">Sign up</span>
+                    Don&apos;t have an account? <span onClick={() => setState("signUp")} className="text-sky-900 hover:underline cursor-pointer">Sign up</span>
                 </p>
             </CardContent>
         </Card>
